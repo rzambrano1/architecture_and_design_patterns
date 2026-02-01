@@ -1,8 +1,6 @@
 # Architecture Patterns and Design Patterns - Practice Project
 
-[![Tests](https://github.com/rzambrano1/architecture_and_design_patterns
-/actions/workflows/tests.yml/badge.svg)](https://github.com/rzambrano1/architecture_and_design_patterns
-/actions/workflows/tests.yml)
+[![Tests](https://github.com/rzambrano1/architecture_and_design_patterns/actions/workflows/tests.yml/badge.svg)](https://github.com/rzambrano1/architecture_and_design_patterns/actions/workflows/tests.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 A practice project implementing architecture patterns and design principles from modern software engineering literature. The code follows test-driven development (TDD), domain-driven design (DDD), and repository pattern implementations.
