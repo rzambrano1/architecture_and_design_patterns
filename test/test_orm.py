@@ -6,7 +6,6 @@ Testing ORM
 # -------------------
 
 
-
 from sqlalchemy import text
 
 # Domain Model Modules

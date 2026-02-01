@@ -6,7 +6,6 @@ Testing Repository
 # -------------------
 
 
-
 from sqlalchemy import text
 
 # Domain Model Modules
