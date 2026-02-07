@@ -20,12 +20,6 @@ jobs:
     - name: Install tox
       run: pip install tox
 
-    - name: Install project
-      run: pip install -e .[web]
-    
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=${PWD}/src" >> $GITHUB_ENV
-      
     - name: Run tests
       env:
         ENV: test
