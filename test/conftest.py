@@ -16,6 +16,8 @@ import sys
 import subprocess
 import time
 import requests
+import shutil
+import tempfile
 
 # Domain Model Modules
 # --------------------
@@ -84,3 +86,9 @@ def add_stock():
             assert r.status_code == 201
 
     return _add_stock
+
+
+@pytest.fixture(scope="function", autouse=True)
+def test_db_path(tmp_path):
+    db_path = tmp_path / "test.db"
+    yield str(db_path)
