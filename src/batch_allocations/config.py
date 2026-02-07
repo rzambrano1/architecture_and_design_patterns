@@ -12,6 +12,9 @@ load_dotenv()
 
 def get_postgres_uri():
     """Get Postgres connection string"""
+    if os.environ.get("ENV") == "test":
+        return get_sqlite_uri()
+
     host = os.environ.get("DB_HOST", "localhost")
     port = 54321 if host == "localhost" else 5432
     user = os.environ.get("DB_USER", "batch_allocations")
@@ -33,4 +36,6 @@ def get_api_url():
 
 def get_sqlite_uri():
     """Get SQLite connection string for tests"""
-    return "sqlite:///:memory:"
+    return "sqlite:///test.db"  # Originally I used "sqlite:///:memory:" but using memory would not
+    # allow both processes in the test to talk to the same database
+    # because of restart_api fixture.

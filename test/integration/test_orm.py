@@ -5,7 +5,6 @@ Testing ORM
 # Boilerplate Modules
 # -------------------
 
-
 from sqlalchemy import text
 
 # Domain Model Modules

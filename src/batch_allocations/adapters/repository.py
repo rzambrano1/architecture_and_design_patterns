@@ -5,11 +5,11 @@ Repository: The ORM should depend on the model
 # Boilerplate Modules
 # -------------------
 
-from typing import Protocol
+from typing import Protocol, List
 
 # Domain Model Modules
 # --------------------
-from batch_allocations.domain.model import Batch
+from ..domain.model import Batch
 
 # Functions and Class Definitions/Declarations
 # --------------------------------------------
@@ -26,6 +26,8 @@ class RepositoryProtocol(Protocol):
     def add(self, batch: Batch) -> None: ...
 
     def get(self, reference) -> Batch: ...
+
+    def list(self) -> List[Batch]: ...
 
 
 class SqlAlchemyRepository(RepositoryProtocol):
@@ -51,24 +53,3 @@ class SqlAlchemyRepository(RepositoryProtocol):
 
     def list(self):
         return self.session.query(Batch).all()
-
-
-class FakeRepository(RepositoryProtocol):
-    """
-    Notes:
-    ------
-
-    When unit testing the service layer, the test files instantiate the FakeRepository class in memory.
-    """
-
-    def __init__(self, batches):
-        self._batches = set(batches)
-
-    def add(self, batch):
-        self._batches.add(batch)
-
-    def get(self, reference):
-        return next(b for b in self._batches if b.reference == reference)
-
-    def list(self):
-        return list(self._batches)

@@ -1,15 +1,14 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "architecture-patterns-practice-ricardo-zambrano"
+name = "batch_allocations"
 version = "1.0.0"
 description = "This system follows along the examples in Architecture Patterns with Python"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
-
 authors = [
     {name = "Ricardo Zambrano", email = "rzambrano@gmail.com"}
     ]
@@ -37,8 +36,15 @@ web = [
 ]
 
 [tool.setuptools]
-packages = ["batch_allocations"]
 package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+# include = ["batch_allocations*"]
+# namespaces = false
+
+[tool.setuptools.package-data]
+"batch_allocations" = ["py.typed"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

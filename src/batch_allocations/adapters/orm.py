@@ -10,7 +10,7 @@ from sqlalchemy.orm import registry, relationship
 
 # Domain Model Modules
 # --------------------
-from batch_allocations.domain.model import Batch, OrderLine
+from ..domain.model import Batch, OrderLine
 
 # Functions and Class Definitions/Declarations
 # --------------------------------------------
