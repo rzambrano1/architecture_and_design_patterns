@@ -1,0 +1,45 @@
+version: "3.9"
+services:
+  app:  
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # container_name: architecture_patterns_practice_app
+    depends_on:
+      postgres:
+        condition: service_healthy  # Wait for DB to be ready
+    environment:  
+      - DB_HOST=postgres  
+      - DB_NAME=batch_allocations
+      - DB_USER=batch_allocations
+      - DB_PASSWORD=${DB_PASSWORD} # Takes the password from .env
+      - API_HOST=app
+      - DB_PORT=5432  # Inside Docker network
+      - PYTHONDONTWRITEBYTECODE=1  
+      - PYTHONUNBUFFERED=1  # Better logging
+    volumes:  
+      - ./src:/src
+      - ./tests:/tests
+    ports:
+      - "5005:5000" # Originally "5005:80", but apparently Flask default port is 5000  
+
+
+  postgres:
+    image: postgres:16-alpine
+    # container_name: architecture_patterns_practice_db
+    environment:
+      - POSTGRES_DB=batch_allocations
+      - POSTGRES_USER=batch_allocations
+      - POSTGRES_PASSWORD=${DB_PASSWORD} # Takes the password from .env
+    ports:
+      - "54321:5432" # Access from host at localhost:54321
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Persist data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U batch_allocations"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:  # Named volume for data persistence

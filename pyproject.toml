@@ -3,9 +3,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "architecture-patterns-ricardo-zambrano"
+name = "architecture-patterns-practice-ricardo-zambrano"
 version = "1.0.0"
 description = "This system follows along the examples in Architecture Patterns with Python"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
 
 authors = [
     {name = "Ricardo Zambrano", email = "rzambrano@gmail.com"}
@@ -13,6 +16,8 @@ authors = [
 
 dependencies = [
     "sqlalchemy",
+    "psycopg2-binary>=2.9",
+    "python-dotenv>=1.0",
 ]
 
 [project.optional-dependencies]
@@ -26,8 +31,13 @@ dev = [
     "mypy",
 ]
 
+web = [
+    "flask>=3.0",
+    "requests>=2.31",
+]
+
 [tool.setuptools]
-packages = ["architecture_patterns"]
+packages = ["batch_allocations"]
 package-dir = {"" = "src"}
 
 [tool.pytest.ini_options]

@@ -10,7 +10,7 @@ from datetime import date
 
 # Domain Model Modules
 # --------------------
-from architecture_patterns.model import Batch, OrderLine
+from batch_allocations.domain.model import Batch, OrderLine
 
 # Helper Functions
 # ----------------

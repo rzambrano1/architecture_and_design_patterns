@@ -19,6 +19,7 @@ Pygments==2.19.2
 pyproject-api==1.10.0
 pytest==9.0.2
 pytest-cov==7.0.0
+python-dotenv==1.2.1
 pytokens==0.4.1
 SQLAlchemy==2.0.46
 tox==4.34.1

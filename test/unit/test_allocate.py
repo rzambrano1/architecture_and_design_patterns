@@ -5,13 +5,14 @@ Testing Domain Model
 # Boilerplate Modules
 # -------------------
 
+
 from datetime import date
 
 import pytest
 
 # Domain Model Modules
 # --------------------
-from architecture_patterns.model import Batch, OrderLine, OutOfStock, allocate
+from batch_allocations.domain.model import Batch, OrderLine, OutOfStock, allocate
 
 # Test Functions
 # --------------

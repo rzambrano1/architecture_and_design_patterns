@@ -2,11 +2,17 @@
 Shared test fixtures
 """
 
+# Boilerplate Modules
+# -------------------
+
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
 
-from architecture_patterns import orm
+# Domain Model Modules
+# --------------------
+from batch_allocations.adapters import orm
 
 
 @pytest.fixture(scope="function")

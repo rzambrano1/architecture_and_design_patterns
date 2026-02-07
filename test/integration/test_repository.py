@@ -8,10 +8,11 @@ Testing Repository
 
 from sqlalchemy import text
 
+from batch_allocations.adapters.repository import SqlAlchemyRepository
+
 # Domain Model Modules
 # --------------------
-from architecture_patterns.model import Batch, OrderLine
-from architecture_patterns.repository import SqlAlchemyRepository
+from batch_allocations.domain.model import Batch, OrderLine
 
 # Fixtures
 # --------

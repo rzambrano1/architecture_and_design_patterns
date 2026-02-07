@@ -10,7 +10,7 @@ from sqlalchemy import text
 
 # Domain Model Modules
 # --------------------
-from architecture_patterns.model import OrderLine
+from batch_allocations.domain.model import OrderLine
 
 # Fixtures
 # --------
