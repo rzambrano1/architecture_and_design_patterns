@@ -21,7 +21,7 @@ jobs:
       run: pip install tox
 
     - name: Install project
-      run: pip install -e .
+      run: pip install -e .[web]
     
     - name: Run tests
       env:
