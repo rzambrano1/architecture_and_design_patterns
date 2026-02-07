@@ -37,11 +37,13 @@ web = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
 # include = ["batch_allocations*"]
 # namespaces = false
+exclude = ["*.mypy_cache*", "*.tests*", "*.test*"]
 
 [tool.setuptools.package-data]
 "batch_allocations" = ["py.typed"]

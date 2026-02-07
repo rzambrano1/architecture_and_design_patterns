@@ -31,6 +31,7 @@ wheels/
 htmlcov/
 .pytest_cache/
 *.cover
+.mypy_cache/
 
 # IDEs
 .vscode/
