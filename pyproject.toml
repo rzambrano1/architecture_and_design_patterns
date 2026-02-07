@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools >= 77.0.3", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -41,12 +41,12 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
-# include = ["batch_allocations*"]
-# namespaces = false
+include = ["batch_allocations*"]
 exclude = ["*.mypy_cache*", "*.tests*", "*.test*"]
+namespaces = true
 
-[tool.setuptools.package-data]
-"batch_allocations" = ["py.typed"]
+# [tool.setuptools.package-data]
+# "batch_allocations" = ["py.typed"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
