@@ -44,10 +44,10 @@ def home():
     }, 200
 
 
-@app.route('/ui')
+@app.route("/ui")
 def ui():
     """Serve HTML interface"""
-    return send_from_directory('static', 'index.html')
+    return send_from_directory("static", "index.html")
 
 
 @app.route("/allocate", methods=["POST"])
