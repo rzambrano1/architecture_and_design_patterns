@@ -1,4 +1,4 @@
-version: "3.9"
+# version: "3.9" # Obsolete in newer Docker Compose
 services:
   app:  
     build:
@@ -18,8 +18,8 @@ services:
       - PYTHONDONTWRITEBYTECODE=1  
       - PYTHONUNBUFFERED=1  # Better logging
     volumes:  
-      - ./src:/src
-      - ./tests:/tests
+      - ./src:/app/src
+      - ./test:/app/test
     ports:
       - "5005:5000" # Originally "5005:80", but apparently Flask default port is 5000  
 

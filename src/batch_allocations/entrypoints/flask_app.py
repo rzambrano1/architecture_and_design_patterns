@@ -5,7 +5,7 @@ This module is the API
 # Boilerplate Modules
 # -------------------
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -42,6 +42,12 @@ def home():
         "version": "1.0.0",
         "status": "running",
     }, 200
+
+
+@app.route('/ui')
+def ui():
+    """Serve HTML interface"""
+    return send_from_directory('static', 'index.html')
 
 
 @app.route("/allocate", methods=["POST"])

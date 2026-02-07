@@ -1,0 +1,54 @@
+### Root endpoint
+GET http://localhost:5005/
+
+### Add a batch
+POST http://localhost:5005/add_batch
+Content-Type: application/json
+
+{
+  "ref": "batch-001",
+  "sku": "BLUE-CHAIR",
+  "qty": 100,
+  "eta": "2026-03-15"
+}
+
+### Add another batch (earlier ETA)
+POST http://localhost:5005/add_batch
+Content-Type: application/json
+
+{
+  "ref": "batch-002",
+  "sku": "BLUE-CHAIR",
+  "qty": 50,
+  "eta": "2026-03-10"
+}
+
+### Allocate an order
+POST http://localhost:5005/allocate
+Content-Type: application/json
+
+{
+  "orderid": "order-123",
+  "sku": "BLUE-CHAIR",
+  "qty": 10
+}
+
+### Try to allocate invalid SKU (should fail)
+POST http://localhost:5005/allocate
+Content-Type: application/json
+
+{
+  "orderid": "order-124",
+  "sku": "UNKNOWN-ITEM",
+  "qty": 5
+}
+
+### Try to allocate too much (should fail)
+POST http://localhost:5005/allocate
+Content-Type: application/json
+
+{
+  "orderid": "order-125",
+  "sku": "BLUE-CHAIR",
+  "qty": 1000
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Batch Allocation System</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        input, button { margin: 5px; padding: 8px; }
+        button { cursor: pointer; background: #007bff; color: white; border: none; }
+        .result { margin-top: 10px; padding: 10px; background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>Batch Allocation System</h1>
+    
+    <div class="section">
+        <h2>Add Batch</h2>
+        <input id="batchRef" placeholder="Batch Reference (e.g., batch-001)">
+        <input id="batchSku" placeholder="SKU (e.g., BLUE-CHAIR)">
+        <input id="batchQty" type="number" placeholder="Quantity">
+        <input id="batchEta" type="date" placeholder="ETA">
+        <button onclick="addBatch()">Add Batch</button>
+        <div id="batchResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>Allocate Order</h2>
+        <input id="orderId" placeholder="Order ID (e.g., order-123)">
+        <input id="orderSku" placeholder="SKU">
+        <input id="orderQty" type="number" placeholder="Quantity">
+        <button onclick="allocateOrder()">Allocate</button>
+        <div id="orderResult" class="result"></div>
+    </div>
+
+    <script>
+        async function addBatch() {
+            const response = await fetch('http://localhost:5005/add_batch', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    ref: document.getElementById('batchRef').value,
+                    sku: document.getElementById('batchSku').value,
+                    qty: parseInt(document.getElementById('batchQty').value),
+                    eta: document.getElementById('batchEta').value || null
+                })
+            });
+            const data = await response.json();
+            document.getElementById('batchResult').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function allocateOrder() {
+            const response = await fetch('http://localhost:5005/allocate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    orderid: document.getElementById('orderId').value,
+                    sku: document.getElementById('orderSku').value,
+                    qty: parseInt(document.getElementById('orderQty').value)
+                })
+            });
+            const data = await response.json();
+            document.getElementById('orderResult').textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>

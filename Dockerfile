@@ -28,7 +28,7 @@ COPY test/ ./test/
 
 # Install Python dependencies
 RUN pip install --upgrade pip && \
-    pip install -e .
+    pip install -e ".[web]"
 
 # Create entrypoints directory if needed
 RUN mkdir -p /app/entrypoints
@@ -37,8 +37,9 @@ RUN mkdir -p /app/entrypoints
 EXPOSE 5000
 
 # Set Flask environment variables. The book uses FLASK_DEBUG=1.
-ENV FLASK_APP=src/entrypoints/flask_app.py \
-    FLASK_DEBUG=1
+ENV FLASK_APP=batch_allocations.entrypoints.flask_app \
+    FLASK_DEBUG=1 \
+    PYTHONPATH=/app/src
 
 # Health check (optional but recommended)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
