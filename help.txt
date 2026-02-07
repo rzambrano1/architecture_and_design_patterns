@@ -10,6 +10,7 @@ docker-compose ps
 
 # View logs
 docker-compose logs -f postgres
+docker-compose logs -f app
 
 # Stop database (keeps data)
 docker-compose down
