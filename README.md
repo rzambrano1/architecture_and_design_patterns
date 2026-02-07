@@ -31,18 +31,38 @@ I am overlooking code documentation. In my code I include docstrings with detail
 ```
 architecture-patterns-python/
 ├── src/
-│   └── architecture_patterns/
-│       ├── model.py           # Domain model (Batch, OrderLine)
-│       ├── orm.py             # SQLAlchemy mappings
-│       └── repository.py      # Repository pattern implementation
+│   └── bactch_allocations/
+|       ├── domain/
+│       |   └── model.py           # Domain model (Batch, OrderLine)
+|       ├── adapters/
+│       |   ├── orm.py             # SQLAlchemy mappings
+│       |   └── repository.py      # Repository pattern implementation
+|       ├── entrypoints/
+│       |   └── flask_app.py       # 
+|       ├── service_layers/
+│       |   └── service_layer.py   # 
+│       └── config.py              # Database configuration
 ├── test/
-│   ├── test_allocate.py       # Allocation logic tests
-│   ├── test_batches.py        # Batch entity tests
-│   ├── test_orm.py            # ORM mapping tests
-│   └── test_repository.py     # Repository tests
-├── pyproject.toml             # Project configuration
-└── tox.ini                    # Test automation
+│   ├── e2e
+│   |   └── test_api.py
+│   ├── integration
+|   │   ├── test_orm.py            # ORM mapping tests
+|   │   └── test_repository.py     # Repository tests
+│   ├── unit
+|   │   ├── test_allocate.py       # Allocation logic tests
+|   │   ├── test_batches.py        # Batch entity tests
+|   │   └── test_services.py       # 
+|   └──conftest.py                 # Shared test fixtures
+├── .env                           # Environment variables
+├── Dockerfile
+├── docker-compose.yml             # Light-weight orchestration 
+├── pyproject.toml                 # Project configuration
+└── tox.ini                        # Test automation
 ```
+
+## Database Setup
+
+This project uses PostgreSQL running in Docker for local development.
 
 ## Getting Started
 
@@ -50,6 +70,7 @@ architecture-patterns-python/
 
 - Python 3.11 or higher
 - pip
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) for Windows
 
 ### Installation
 
@@ -71,6 +92,37 @@ python -m venv .venv
 pip install -e ".[dev]"
 ```
 
+### Docker Quick Start
+
+1. **Start the database:**
+```bash
+   docker-compose up -d
+```
+
+2. **Verify it's running:**
+```bash
+   docker-compose ps
+```
+
+3. **Stop the database:**
+```bash
+   docker-compose down
+```
+
+### Database Connection Details
+- **Host**: localhost
+- **Port**: 5432
+- **Database**: allocation
+- **User**: postgres
+- **Password**: postgres
+- **Connection String**: `postgresql://postgres:postgres@localhost:5432/allocation`
+
+### Notes
+- **Tests use SQLite** in-memory for speed (no Postgres needed)
+- **Development uses Postgres** for production-like environment
+- Data persists between container restarts
+- Use `docker-compose down -v` to delete all data
+
 ## Running Tests
 
 ### Using pytest directly:
@@ -86,6 +138,7 @@ tox
 # Run specific environment
 tox -e py311        # Run tests on Python 3.11
 tox -e lint         # Run code quality checks
+tox -e fast_lint    # Run light-weight quality checks avoiding ruff
 tox -e coverage     # Run tests with coverage report
 tox -e format       # Auto-format code
 ```

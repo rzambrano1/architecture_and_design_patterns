@@ -22,13 +22,13 @@ COPY pyproject.toml ./
 # COPY requirements.txt ./
 # RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Python dependencies
-RUN pip install --upgrade pip && \
-    pip install -e .
-
 # Copy application code
 COPY src/ ./src/
 COPY test/ ./test/
+
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install -e .
 
 # Create entrypoints directory if needed
 RUN mkdir -p /app/entrypoints

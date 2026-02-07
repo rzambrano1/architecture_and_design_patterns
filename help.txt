@@ -1,0 +1,33 @@
+-----------------------------------------------------
+These are useful commands to run the Docker container
+-----------------------------------------------------
+
+# Start database
+docker-compose up -d
+
+# Check status
+docker-compose ps
+
+# View logs
+docker-compose logs -f postgres
+
+# Stop database (keeps data)
+docker-compose down
+
+# Stop and DELETE all data (fresh start)
+docker-compose down -v
+
+# Access Postgres shell
+docker-compose exec postgres psql -U postgres -d allocation
+
+# Inside psql shell:
+\l              # List databases
+\c allocation   # Connect to allocation database
+\dt             # List tables
+\q              # Quit
+
+# Restart container
+docker-compose restart
+
+# Pull latest image
+docker-compose pull
