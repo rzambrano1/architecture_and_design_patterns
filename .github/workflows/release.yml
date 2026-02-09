@@ -8,17 +8,20 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+        contents: write 
     
     steps:
     - uses: actions/checkout@v3
     
     - name: Create Release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v1 # Original version: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
+        generate_release_notes: true
         body: |
           ## Changes in this release
           
