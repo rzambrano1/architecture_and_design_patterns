@@ -35,3 +35,35 @@ docker-compose restart
 
 # Pull latest image
 docker-compose pull
+
+------------------------------------
+Cheatsheet for GitHub release update
+------------------------------------
+* As of 2026/Jan
+
+Workflow example:
+
+(1) First commit version bump
+git add .
+git commit -m "Change in example.py for to bump version to 1.0.15"
+git push 
+
+(2) After committing, generate and push tag from the CLI
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
+
+In the release.yml, the CHANGELOG.md can be updated automatically by adding this job:
+
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Get commits since last tag
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        if [ -z "$PREVIOUS_TAG" ]; then
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+        else
+          CHANGELOG=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+        fi
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
