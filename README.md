@@ -1,7 +1,7 @@
 # Architecture Patterns and Design Patterns - Practice Project
 
 [![Tests](https://github.com/rzambrano1/architecture_and_design_patterns/actions/workflows/tests.yml/badge.svg)](https://github.com/rzambrano1/architecture_and_design_patterns/actions/workflows/tests.yml)
-[![GitHub release](https://img.shields.io/github/v/release/YOUR-USERNAME/architecture-patterns-python)](https://github.com/YOUR-USERNAME/architecture-patterns-python/releases)
+[![GitHub release](https://img.shields.io/github/v/release/rzambrano1/architecture-patterns-python)](https://github.com/rzambrano1/architecture-patterns-python/releases)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
