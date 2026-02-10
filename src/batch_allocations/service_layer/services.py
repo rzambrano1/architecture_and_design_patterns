@@ -72,9 +72,12 @@ def is_valid_sku(sku, batches):
 #     session.commit()
 #     return batchref
 
+
 def allocate(
-    orderid: str, sku: str, qty: int, # Fully decoupled from the domain layer.
-    uow: UnitOfWorkProtocol,          # The one dependency in the service layer is with an abstract unit of work
+    orderid: str,
+    sku: str,
+    qty: int,  # Fully decoupled from the domain layer.
+    uow: UnitOfWorkProtocol,  # The one dependency in the service layer is with an abstract unit of work
 ) -> str:
     line = OrderLine(orderid, sku, qty)
     with uow:
@@ -93,12 +96,14 @@ def allocate(
 #     repo.add(model.Batch(ref, sku, qty, eta))
 #     session.commit()
 
+
 def add_batch(
-    ref: str, sku: str, qty: int, eta: Optional[date],
-    uow: UnitOfWorkProtocol, 
+    ref: str,
+    sku: str,
+    qty: int,
+    eta: Optional[date],
+    uow: UnitOfWorkProtocol,
 ):
     with uow:
         uow.batches.add(model.Batch(ref, sku, qty, eta))
         uow.commit()
-
-

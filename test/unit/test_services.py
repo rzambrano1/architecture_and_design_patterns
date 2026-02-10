@@ -54,10 +54,11 @@ class FakeSession:
     def commit(self):
         self.committed = True
 
+
 class FakeUnitOfWork(UnitOfWorkProtocol):
     def __init__(self):
-        self.batches = FakeRepository([])  
-        self.committed = False  
+        self.batches = FakeRepository([])
+        self.committed = False
 
     def __enter__(self):
         return self
@@ -66,10 +67,11 @@ class FakeUnitOfWork(UnitOfWorkProtocol):
         return self.rollback()
 
     def commit(self):
-        self.committed = True  
+        self.committed = True
 
     def rollback(self):
         pass
+
 
 # Test Functions
 # --------------
@@ -79,33 +81,33 @@ class FakeUnitOfWork(UnitOfWorkProtocol):
 
 # [[1]] This function was replaced by test_allocate_returns_allocation() as a result of the signature change of services.allocate()
 # def test_returns_allocation():
-    # line = OrderLine("o1", "COMPLICATED-LAMP", 10)          # Commented out because now allocate is expresseed in primitives
-    # batch = Batch("b1", "COMPLICATED-LAMP", 100, eta=None)  # No longer necessary because of services.add_batch() that 
-                                                              # expresses a batch on terms of primitives.
-    # repo = FakeRepository([batch])
+# line = OrderLine("o1", "COMPLICATED-LAMP", 10)          # Commented out because now allocate is expresseed in primitives
+# batch = Batch("b1", "COMPLICATED-LAMP", 100, eta=None)  # No longer necessary because of services.add_batch() that
+# expresses a batch on terms of primitives.
+# repo = FakeRepository([batch])
 
-    # result = allocate(line, repo, FakeSession()) # Uses old allocate() signature
-    # result = allocate("b1", "COMPLICATED-LAMP", 100, repo, FakeSession())
-    # assert result == "b1"
+# result = allocate(line, repo, FakeSession()) # Uses old allocate() signature
+# result = allocate("b1", "COMPLICATED-LAMP", 100, repo, FakeSession())
+# assert result == "b1"
 
-# [[2]] Once the unit of work was introduced the test was upgraded again. 
+# [[2]] Once the unit of work was introduced the test was upgraded again.
 # def test_allocate_returns_allocation():
 #     repo, session = FakeRepository([]), FakeSession()
 #     add_batch("batch1", "COMPLICATED-LAMP", 100, None, repo, session)
 #     result = allocate("o1", "COMPLICATED-LAMP", 10, repo, session)
 #     assert result == "batch1"
 
-def test_allocate_returns_allocation():
-    uow = FakeUnitOfWork()  
-    add_batch("batch1", "COMPLICATED-LAMP", 100, None, uow)  
-    result = allocate("o1", "COMPLICATED-LAMP", 10, uow)  
-    assert result == "batch1"
 
+def test_allocate_returns_allocation():
+    uow = FakeUnitOfWork()
+    add_batch("batch1", "COMPLICATED-LAMP", 100, None, uow)
+    result = allocate("o1", "COMPLICATED-LAMP", 10, uow)
+    assert result == "batch1"
 
 
 # <------------------------------------------ test_allocate_errors_for_invalid_sku ------------------------------------------>
 # <--------------------------------------------         record of changes        -------------------------------------------->
-# [[1]] This function was replaced by test_allocate_errors_for_invalid_sku() as a result of the signature change of 
+# [[1]] This function was replaced by test_allocate_errors_for_invalid_sku() as a result of the signature change of
 # services.allocate()and the addition of the missing service add_batch()
 # def test_error_for_invalid_sku():
 #     line = OrderLine("o1", "NONEXISTENTSKU", 10)
@@ -131,6 +133,7 @@ def test_allocate_errors_for_invalid_sku(session_factory):
     with pytest.raises(InvalidSku, match="Invalid sku NONEXISTENTSKU"):
         allocate("o1", "NONEXISTENTSKU", 10, uow)
 
+
 def test_commits(session_factory):
 
     # No longer needed
@@ -146,6 +149,7 @@ def test_commits(session_factory):
     allocate("o1", "OMINOUS-MIRROR", 10, uow)
     assert uow.committed is True
 
+
 # <----------------------------------------------------- test_add_batch ----------------------------------------------------->
 # <--------------------------------------------         record of changes        -------------------------------------------->
 
@@ -156,10 +160,9 @@ def test_commits(session_factory):
 #     assert repo.get("b1") is not None
 #     assert session.committed
 
+
 def test_add_batch():
-    uow = FakeUnitOfWork()  
-    add_batch("b1", "CRUNCHY-ARMCHAIR", 100, None, uow)  
+    uow = FakeUnitOfWork()
+    add_batch("b1", "CRUNCHY-ARMCHAIR", 100, None, uow)
     assert uow.batches.get("b1") is not None
     assert uow.committed
-
-

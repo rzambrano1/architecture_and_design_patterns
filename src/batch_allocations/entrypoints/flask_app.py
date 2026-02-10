@@ -89,9 +89,9 @@ def allocate_endpoint():
 
 @app.route("/add_batch", methods=["POST"])
 def add_batch_endpoint():
-    
+
     # session = get_session()
-    #repo = SqlAlchemyRepository(session)
+    # repo = SqlAlchemyRepository(session)
 
     eta = request.json.get("eta")
     if eta:

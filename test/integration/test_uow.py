@@ -16,6 +16,7 @@ from batch_allocations.service_layer.unit_of_work import SqlAlchemyUnitOfWork
 # Helper Functions and Classes
 # ----------------------------
 
+
 def insert_batch(session, ref, sku, qty, eta):
     session.execute(
         text(
@@ -27,11 +28,11 @@ def insert_batch(session, ref, sku, qty, eta):
 
 
 def get_allocated_batch_ref(session, orderid, sku):
-    [[orderlineid]] = session.execute(  
+    [[orderlineid]] = session.execute(
         text("SELECT id FROM order_lines WHERE orderid=:orderid AND sku=:sku"),
         dict(orderid=orderid, sku=sku),
     )
-    [[batchref]] = session.execute(  
+    [[batchref]] = session.execute(
         text(
             "SELECT b.reference FROM allocations JOIN batch_stock AS b ON batch_id = b.id"
             " WHERE orderline_id=:orderlineid"
@@ -40,23 +41,26 @@ def get_allocated_batch_ref(session, orderid, sku):
     )
     return batchref
 
+
 # Test Functions
 # --------------
+
 
 def test_uow_can_retrieve_a_batch_and_allocate_to_it(session_factory):
     session = session_factory()
     insert_batch(session, "batch1", "HIPSTER-WORKBENCH", 100, None)
     session.commit()
 
-    uow = SqlAlchemyUnitOfWork(session_factory)  
+    uow = SqlAlchemyUnitOfWork(session_factory)
     with uow:
-        batch = uow.batches.get(reference="batch1")  
+        batch = uow.batches.get(reference="batch1")
         line = OrderLine("o1", "HIPSTER-WORKBENCH", 10)
         batch.allocate(line)
-        uow.commit() 
+        uow.commit()
 
     batchref = get_allocated_batch_ref(session, "o1", "HIPSTER-WORKBENCH")
     assert batchref == "batch1"
+
 
 def test_rolls_back_uncommitted_work_by_default(session_factory):
     uow = SqlAlchemyUnitOfWork(session_factory)

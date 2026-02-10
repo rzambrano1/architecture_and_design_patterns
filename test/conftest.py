@@ -93,6 +93,7 @@ def test_db_path(tmp_path):
     db_path = tmp_path / "test.db"
     yield str(db_path)
 
+
 @pytest.fixture(scope="function")
 def session_factory(in_memory_db):
     orm.start_mappers()
