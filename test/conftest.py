@@ -22,7 +22,7 @@ import tempfile
 # Domain Model Modules
 # --------------------
 from batch_allocations.adapters import orm
-from batch_allocations.config import get_api_url
+from batch_allocations.config import get_api_url, get_postgres_uri
 
 # Fixture Definitions
 # -------------------
@@ -92,3 +92,9 @@ def add_stock():
 def test_db_path(tmp_path):
     db_path = tmp_path / "test.db"
     yield str(db_path)
+
+@pytest.fixture(scope="function")
+def session_factory(in_memory_db):
+    orm.start_mappers()
+    yield sessionmaker(bind=in_memory_db)
+    clear_mappers()

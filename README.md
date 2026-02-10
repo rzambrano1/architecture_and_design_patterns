@@ -36,24 +36,29 @@ architecture-patterns-python/
 ├── src/
 │   └── bactch_allocations/
 |       ├── domain/
-│       |   └── model.py           # Domain model (Batch, OrderLine)
+│       |   ├── model.py           # Domain model (Batch, OrderLine)
+│       |   └── events.py          # 
 |       ├── adapters/
 │       |   ├── orm.py             # SQLAlchemy mappings
 │       |   └── repository.py      # Repository pattern implementation
 |       ├── entrypoints/
 │       |   └── flask_app.py       # 
-|       ├── service_layers/
-│       |   └── service_layer.py   # 
+|       ├── service_layer/
+│       |   ├── services.py        #
+│       |   ├── messagebus.py      # 
+│       |   └── unit_of_work.py    # 
 │       └── config.py              # Database configuration
 ├── test/
 │   ├── e2e
 │   |   └── test_api.py
 │   ├── integration
+|   │   ├── test_uow.py            # 
 |   │   ├── test_orm.py            # ORM mapping tests
 |   │   └── test_repository.py     # Repository tests
 │   ├── unit
 |   │   ├── test_allocate.py       # Allocation logic tests
 |   │   ├── test_batches.py        # Batch entity tests
+|   │   ├── test_product.py        # 
 |   │   └── test_services.py       # 
 |   └──conftest.py                 # Shared test fixtures
 ├── .env                           # Environment variables

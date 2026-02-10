@@ -19,7 +19,8 @@ from ..config import get_postgres_uri
 from ..domain.model import OrderLine, OutOfStock
 from ..adapters.orm import start_mappers, metadata
 from ..adapters.repository import SqlAlchemyRepository
-from ..service_layer.services import allocate, InvalidSku
+from ..service_layer.services import allocate, add_batch, InvalidSku
+from ..service_layer.unit_of_work import DEFAULT_SESSION_FACTORY, SqlAlchemyUnitOfWork
 from ..domain.model import Batch
 
 # Functions and Class Definitions/Declarations
@@ -62,35 +63,59 @@ def allocate_endpoint():
             "qty": 10
         }
     """
-    session = get_session()
-    repo = SqlAlchemyRepository(session)
+    # session = get_session()
+    # repo = SqlAlchemyRepository(session)
 
-    line = OrderLine(
-        request.json["orderid"],
-        request.json["sku"],
-        request.json["qty"],
-    )
+    # Now allocate takes primitives as parameters because of refactoring + unit of work
+    # line = OrderLine(
+    #     request.json["orderid"],
+    #     request.json["sku"],
+    #     request.json["qty"],
+    # )
+
+    orderid = request.json["orderid"]
+    sku = request.json["sku"]
+    qty = request.json["qty"]
+
+    uow = SqlAlchemyUnitOfWork(session_factory=get_session)
 
     try:
-        batchref = allocate(line, repo, session)
+        # batchref = allocate(line, repo, session)
+        batchref = allocate(orderid, sku, qty, uow)
     except (OutOfStock, InvalidSku) as e:
         return {"message": str(e)}, 400
     return {"message": "Order Allocated", "batchref": batchref}, 201
 
 
 @app.route("/add_batch", methods=["POST"])
-def add_batch():
-    session = get_session()
-    repo = SqlAlchemyRepository(session)
+def add_batch_endpoint():
+    
+    # session = get_session()
+    #repo = SqlAlchemyRepository(session)
 
     eta = request.json.get("eta")
     if eta:
         eta = datetime.fromisoformat(eta).date()
 
-    batch = Batch(request.json["ref"], request.json["sku"], request.json["qty"], eta)
-    repo.add(batch)
-    session.commit()
-    return {"message": "Batch commited", "batchref": batch.reference}, 201
+    # Upgrading these lines of code with the simpler services.add_batch() session.
+    # batch = Batch(request.json["ref"], request.json["sku"], request.json["qty"], eta)
+    # repo.add(batch)
+    # session.commit()
+
+    uow = SqlAlchemyUnitOfWork(session_factory=get_session)
+
+    # Because of unit of work upgrade repo and session are no longer needed. Passing uow instead.
+    add_batch(
+        request.json["ref"],
+        request.json["sku"],
+        request.json["qty"],
+        eta,
+        # repo,
+        # session,
+        uow,
+    )
+
+    return {"message": "Batch commited"}, 201
 
 
 if __name__ == "__main__":
