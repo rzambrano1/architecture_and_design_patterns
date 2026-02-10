@@ -63,15 +63,6 @@ def allocate_endpoint():
             "qty": 10
         }
     """
-    # session = get_session()
-    # repo = SqlAlchemyRepository(session)
-
-    # Now allocate takes primitives as parameters because of refactoring + unit of work
-    # line = OrderLine(
-    #     request.json["orderid"],
-    #     request.json["sku"],
-    #     request.json["qty"],
-    # )
 
     orderid = request.json["orderid"]
     sku = request.json["sku"]
@@ -80,7 +71,6 @@ def allocate_endpoint():
     uow = SqlAlchemyUnitOfWork(session_factory=get_session)
 
     try:
-        # batchref = allocate(line, repo, session)
         batchref = allocate(orderid, sku, qty, uow)
     except (OutOfStock, InvalidSku) as e:
         return {"message": str(e)}, 400
@@ -90,28 +80,17 @@ def allocate_endpoint():
 @app.route("/add_batch", methods=["POST"])
 def add_batch_endpoint():
 
-    # session = get_session()
-    # repo = SqlAlchemyRepository(session)
-
     eta = request.json.get("eta")
     if eta:
         eta = datetime.fromisoformat(eta).date()
 
-    # Upgrading these lines of code with the simpler services.add_batch() session.
-    # batch = Batch(request.json["ref"], request.json["sku"], request.json["qty"], eta)
-    # repo.add(batch)
-    # session.commit()
-
     uow = SqlAlchemyUnitOfWork(session_factory=get_session)
 
-    # Because of unit of work upgrade repo and session are no longer needed. Passing uow instead.
     add_batch(
         request.json["ref"],
         request.json["sku"],
         request.json["qty"],
         eta,
-        # repo,
-        # session,
         uow,
     )
 

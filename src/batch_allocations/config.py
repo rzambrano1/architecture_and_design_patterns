@@ -36,6 +36,7 @@ def get_api_url():
 
 def get_sqlite_uri():
     """Get SQLite connection string for tests"""
-    return "sqlite:///test.db"  # Originally I used "sqlite:///:memory:" but using memory would not
+    return "sqlite:///test.db"
+    # Originally I used "sqlite:///:memory:" but using memory would not
     # allow both processes in the test to talk to the same database
     # because of restart_api fixture.

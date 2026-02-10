@@ -13,7 +13,6 @@ from typing import List, Optional, Set
 # --------------------------------------------
 
 
-# @dataclass(frozen=True)     # SQL Alchemy has an issue with inmutable classes
 @dataclass(unsafe_hash=True)  # This allows hashing even though it's mutable
 class OrderLine:
     """Value Object Pattern"""

@@ -36,10 +36,7 @@ def insert_order_line(session):
     return orderline_id
 
 
-def insert_batch(
-    session, batch_ref
-):  # I did not understand why the batch_id was passed as a
-    # string parameter instead of the Batch instance
+def insert_batch(session, batch_ref):
     session.execute(
         text(
             "INSERT INTO batch_stock (reference, sku, _purchased_quantity, eta)"
