@@ -29,12 +29,13 @@ class FakeRepository(ProductRepositoryProtocol):
     """
 
     def __init__(self, products):
+        self.seen = set()  # type Set[Product]
         self._products = set(products)
 
-    def add(self, products):
+    def _add(self, products):
         self._products.add(products)
 
-    def get(self, sku):
+    def _get(self, sku):
         return next((p for p in self._products if p.sku == sku), None)
 
     def list(self):
@@ -66,7 +67,7 @@ class FakeUnitOfWork(UnitOfWorkProtocol):
     def __exit__(self, *args):
         return self.rollback()
 
-    def commit(self):
+    def _commit(self):
         self.committed = True
 
     def rollback(self):

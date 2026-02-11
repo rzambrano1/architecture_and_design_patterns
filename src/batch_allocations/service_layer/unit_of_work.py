@@ -23,6 +23,9 @@ from ..adapters.repository import (
     ProductRepositoryProtocol,
     SqlAlchemyRepository,
 )
+
+from ..service_layer.messagebus import handle
+
 from ..config import get_postgres_uri
 
 # Constants
@@ -76,7 +79,20 @@ class UnitOfWorkProtocol(Protocol):
     ) -> None:
         self.rollback()
 
-    def commit(self): ...
+    def commit(self):
+        self._commit()
+        self.publish_events()
+
+    def publish_events(self):
+        for product in self.products.seen:
+            # Turns out that SQLAlchemy does not call Product's __init__ method. To avoid this pitfall,
+            # getting the events list, or an empty list if it doesn't exist
+            events = getattr(product, "events", [])
+            while events:
+                event = product.events.pop(0)
+                handle(event)
+
+    def _commit(self): ...
 
     def rollback(self): ...
 
@@ -101,7 +117,7 @@ class SqlAlchemyUnitOfWork(UnitOfWorkProtocol):
         self.rollback()  # Default action. A UOW should commit only when it is explicitly told to.
         self.session.close()
 
-    def commit(self):
+    def _commit(self):
         self.session.commit()
 
     def rollback(self):

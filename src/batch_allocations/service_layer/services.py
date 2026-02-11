@@ -49,7 +49,7 @@ def allocate(
     sku: str,
     qty: int,  # Fully decoupled from the domain layer.
     uow: UnitOfWorkProtocol,  # The one dependency in the service layer is with an abstract unit of work
-) -> str:
+) -> Optional[str]:
     line = OrderLine(orderid, sku, qty)
     with uow:
         product = uow.products.get(sku=line.sku)

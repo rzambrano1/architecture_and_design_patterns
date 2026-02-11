@@ -16,7 +16,8 @@ from datetime import datetime
 # --------------------
 
 from ..config import get_postgres_uri
-from ..domain.model import OrderLine, OutOfStock
+from ..domain.model import OrderLine
+from ..domain.events import OutOfStock
 from ..adapters.orm import start_mappers, metadata
 from ..adapters.repository import SqlAlchemyRepository
 from ..service_layer.services import allocate, add_batch, InvalidSku
@@ -72,7 +73,7 @@ def allocate_endpoint():
 
     try:
         batchref = allocate(orderid, sku, qty, uow)
-    except (OutOfStock, InvalidSku) as e:
+    except InvalidSku as e:
         return {"message": str(e)}, 400
     return {"message": "Order Allocated", "batchref": batchref}, 201
 

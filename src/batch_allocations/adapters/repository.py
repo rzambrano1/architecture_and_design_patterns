@@ -35,9 +35,21 @@ class RepositoryProtocol(Protocol):
 
 class ProductRepositoryProtocol(Protocol):
 
-    def add(self, product: Product): ...
+    seen: set[Product]
 
-    def get(self, sku) -> Product: ...
+    def add(self, product: Product) -> None:
+        self._add(product)
+        self.seen.add(product)
+
+    def get(self, sku) -> Product:
+        product = self._get(sku)
+        if product:
+            self.seen.add(product)
+        return product
+
+    def _add(self, product: Product): ...
+
+    def _get(self, sku) -> Product: ...
 
 
 class SqlAlchemyRepository(ProductRepositoryProtocol):
@@ -52,11 +64,12 @@ class SqlAlchemyRepository(ProductRepositoryProtocol):
 
     def __init__(self, session):
         self.session = session
+        self.seen = set()  # type Set[Product]
 
-    def add(self, product):
+    def _add(self, product):
         self.session.add(product)
 
-    def get(self, sku):
+    def _get(self, sku):
         return self.session.query(Product).filter_by(sku=sku).first()
 
     def get_by_batchref(self, batchref):

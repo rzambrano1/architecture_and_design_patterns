@@ -11,6 +11,11 @@ from dataclasses import dataclass
 from datetime import date
 from typing import List, Optional, Set
 
+# Domain Model Modules
+# --------------------
+
+from ..domain.events import OutOfStock, Event
+
 # Functions and Class Definitions/Declarations
 # --------------------------------------------
 
@@ -69,8 +74,8 @@ class Batch:
         return self.eta > other.eta
 
 
-class OutOfStock(Exception):
-    pass
+# class OutOfStock(Exception):
+#     pass
 
 
 # To be able to mantain invariants while escaling to concurrent operations
@@ -80,16 +85,19 @@ class Product:
         self.sku = sku
         self.batches = batches  # This is a reference to a colection of batches
         self.version_number = version_number
+        self.events: list[Event] = []
 
     # The function allocate now is a method of the new Aggregate class `Product`
-    def allocate(self, line: OrderLine) -> str:
+    def allocate(self, line: OrderLine) -> Optional[str]:
         try:
             batch = next(b for b in sorted(self.batches) if b.can_allocate(line))
             batch.allocate(line)
             self.version_number += 1
             return batch.reference
         except StopIteration:
-            raise OutOfStock(f"Out of stock for sku {line.sku}")
+            self.events.append(OutOfStock(line.sku))
+            # raise OutOfStock(f"Out of stock for sku {line.sku}")
+            return None
 
 
 # def allocate(line: OrderLine, batches: List[Batch]) -> str:
