@@ -6,11 +6,11 @@ Repository: The ORM should depend on the model
 # -------------------
 
 from sqlalchemy import Column, Date, ForeignKey, Integer, MetaData, String, Table
-from sqlalchemy.orm import registry, relationship
+from sqlalchemy.orm import registry, relationship, foreign
 
 # Domain Model Modules
 # --------------------
-from ..domain.model import Batch, OrderLine
+from ..domain.model import Batch, OrderLine, Product
 
 # Functions and Class Definitions/Declarations
 # --------------------------------------------
@@ -29,6 +29,13 @@ order_lines = Table(
     Column("sku", String(255)),
     Column("qty", Integer, nullable=False),
     Column("orderid", String(255)),
+)
+
+products = Table(
+    "products",
+    metadata,
+    Column("sku", String(255), primary_key=True),
+    Column("version_number", Integer, nullable=False, server_default="0"),
 )
 
 batch_stock = Table(
@@ -76,7 +83,7 @@ def start_mappers():
     """
     lines_mapper = mapper_registry.map_imperatively(OrderLine, order_lines)
 
-    mapper_registry.map_imperatively(
+    batches_mapper = mapper_registry.map_imperatively(
         Batch,
         batch_stock,
         properties={
@@ -84,6 +91,17 @@ def start_mappers():
                 lines_mapper,
                 secondary=allocations,  # The join table
                 collection_class=set,  # Store as a set (matches domain model)
+            )
+        },
+    )
+
+    mapper_registry.map_imperatively(
+        Product,
+        products,
+        properties={
+            "batches": relationship(
+                batches_mapper,
+                primaryjoin=products.c.sku == foreign(batch_stock.c.sku),
             )
         },
     )

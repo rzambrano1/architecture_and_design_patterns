@@ -10,6 +10,9 @@ import pytest
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
+from sqlalchemy.exc import OperationalError
+
+from requests.exceptions import ConnectionError
 
 import os
 import sys
@@ -99,3 +102,40 @@ def session_factory(in_memory_db):
     orm.start_mappers()
     yield sessionmaker(bind=in_memory_db)
     clear_mappers()
+
+
+def wait_for_postgres_to_come_up(engine):
+    deadline = time.time() + 10
+    while time.time() < deadline:
+        try:
+            return engine.connect()
+        except OperationalError:
+            time.sleep(0.5)
+    pytest.fail("Postgres never came up")
+
+
+@pytest.fixture(scope="session")
+def postgres_db():
+    engine = create_engine(get_postgres_uri())
+    wait_for_postgres_to_come_up(engine)
+    orm.metadata.create_all(engine)
+    return engine
+
+
+@pytest.fixture(scope="function")
+def postgres_session_factory(postgres_db):
+    """Session factory - created for each test"""
+    orm.start_mappers()
+    yield sessionmaker(bind=postgres_db)  # Uses the engine from postgres_db
+    clear_mappers()
+
+
+def wait_for_webapp_to_come_up():
+    deadline = time.time() + 10
+    url = get_api_url()
+    while time.time() < deadline:
+        try:
+            return requests.get(url)
+        except ConnectionError:
+            time.sleep(0.5)
+    pytest.fail("API never came up")

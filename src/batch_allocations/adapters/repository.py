@@ -9,7 +9,7 @@ from typing import Protocol, List
 
 # Domain Model Modules
 # --------------------
-from ..domain.model import Batch
+from ..domain.model import Batch, Product
 
 # Functions and Class Definitions/Declarations
 # --------------------------------------------
@@ -30,7 +30,17 @@ class RepositoryProtocol(Protocol):
     def list(self) -> List[Batch]: ...
 
 
-class SqlAlchemyRepository(RepositoryProtocol):
+# When implementing the Aggregate pattern we go from a Repository to a ProductRepository
+
+
+class ProductRepositoryProtocol(Protocol):
+
+    def add(self, product: Product): ...
+
+    def get(self, sku) -> Product: ...
+
+
+class SqlAlchemyRepository(ProductRepositoryProtocol):
     """
     Notes:
     ------
@@ -43,13 +53,11 @@ class SqlAlchemyRepository(RepositoryProtocol):
     def __init__(self, session):
         self.session = session
 
-    def add(self, batch):
-        self.session.add(batch)
+    def add(self, product):
+        self.session.add(product)
 
-    def get(self, reference):
-        return (
-            self.session.query(Batch).filter_by(reference=reference).one()
-        )  # one() is the "strict" execution method. It tells SQLAlchemy to execute the query and expects exactly one result
+    def get(self, sku):
+        return self.session.query(Product).filter_by(sku=sku).first()
 
-    def list(self):
-        return self.session.query(Batch).all()
+    def get_by_batchref(self, batchref):
+        return self.session.query(Batch).filter_by(reference=batchref).first()

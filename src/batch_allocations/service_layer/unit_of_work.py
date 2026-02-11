@@ -6,6 +6,8 @@ data layer. It reliex on Python's context managers.
 # Boilerplate Modules
 # -------------------
 
+from __future__ import annotations
+
 from typing import Protocol, Optional, Type, Any
 from types import TracebackType
 
@@ -16,16 +18,44 @@ from sqlalchemy.orm import Session
 # Domain Model Modules
 # --------------------
 
-from ..adapters.repository import RepositoryProtocol, SqlAlchemyRepository
+from ..adapters.repository import (
+    RepositoryProtocol,
+    ProductRepositoryProtocol,
+    SqlAlchemyRepository,
+)
 from ..config import get_postgres_uri
 
 # Constants
 # ---------
 
-DEFAULT_SESSION_FACTORY = sessionmaker(
-    bind=create_engine(
-        get_postgres_uri(),
-    )
+
+def get_session_factory(uri=None, isolation_level=None):
+    """Create session factory with appropriate isolation level"""
+    if uri is None:
+        uri = get_postgres_uri()
+
+    # Only set isolation_level for PostgreSQL
+    if uri.startswith("postgresql") and isolation_level:
+        engine = create_engine(uri, isolation_level=isolation_level)
+    else:
+        # For SQLite, use default or SERIALIZABLE
+        if uri.startswith("sqlite"):
+            engine = create_engine(uri, isolation_level="SERIALIZABLE")
+        else:
+            engine = create_engine(uri)
+
+    return sessionmaker(bind=engine)
+
+
+# DEFAULT_SESSION_FACTORY = sessionmaker(
+#     bind=create_engine(
+#         get_postgres_uri(),
+#         isolation_level="REPEATABLE READ",
+#     )
+# )
+
+DEFAULT_SESSION_FACTORY = get_session_factory(
+    isolation_level="REPEATABLE READ"  # Only applied to PostgreSQL
 )
 
 # Functions and Class Definitions/Declarations
@@ -33,7 +63,8 @@ DEFAULT_SESSION_FACTORY = sessionmaker(
 
 
 class UnitOfWorkProtocol(Protocol):
-    batches: RepositoryProtocol
+    # batches: RepositoryProtocol
+    products: ProductRepositoryProtocol  # With the Product Aggregate the RepositoryProtocol was updated to ProductRepositoryProtocol
 
     def __enter__(self) -> "UnitOfWorkProtocol": ...
 
@@ -59,7 +90,7 @@ class SqlAlchemyUnitOfWork(UnitOfWorkProtocol):
         Excecutes when entering the with block.
         """
         self.session = self.session_factory()  # type: Session
-        self.batches = SqlAlchemyRepository(self.session)
+        self.products = SqlAlchemyRepository(self.session)
         return self
 
     def __exit__(self, exn_type, exn_value, traceback):

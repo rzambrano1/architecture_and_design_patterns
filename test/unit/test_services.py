@@ -11,8 +11,8 @@ from typing import Protocol
 # Domain Model Modules
 # --------------------
 
-from batch_allocations.adapters.repository import RepositoryProtocol
-from batch_allocations.domain.model import OrderLine, Batch
+from batch_allocations.adapters.repository import ProductRepositoryProtocol
+from batch_allocations.domain.model import OrderLine, Batch, Product
 from batch_allocations.service_layer.services import allocate, add_batch, InvalidSku
 from batch_allocations.service_layer.unit_of_work import UnitOfWorkProtocol
 
@@ -20,7 +20,7 @@ from batch_allocations.service_layer.unit_of_work import UnitOfWorkProtocol
 # ----------------------------
 
 
-class FakeRepository(RepositoryProtocol):
+class FakeRepository(ProductRepositoryProtocol):
     """
     Notes:
     ------
@@ -28,17 +28,17 @@ class FakeRepository(RepositoryProtocol):
     When unit testing the service layer, the test files instantiate the FakeRepository class in memory.
     """
 
-    def __init__(self, batches):
-        self._batches = set(batches)
+    def __init__(self, products):
+        self._products = set(products)
 
-    def add(self, batch):
-        self._batches.add(batch)
+    def add(self, products):
+        self._products.add(products)
 
-    def get(self, reference):
-        return next(b for b in self._batches if b.reference == reference)
+    def get(self, sku):
+        return next((p for p in self._products if p.sku == sku), None)
 
     def list(self):
-        return list(self._batches)
+        return list(self._products)
 
 
 class FakeSession:
@@ -57,7 +57,7 @@ class FakeSession:
 
 class FakeUnitOfWork(UnitOfWorkProtocol):
     def __init__(self):
-        self.batches = FakeRepository([])
+        self.products = FakeRepository([])
         self.committed = False
 
     def __enter__(self):
@@ -77,6 +77,20 @@ class FakeUnitOfWork(UnitOfWorkProtocol):
 # --------------
 
 
+def test_add_batch_for_new_product():
+    uow = FakeUnitOfWork()
+    add_batch("b1", "CRUNCHY-ARMCHAIR", 100, None, uow)
+    assert uow.products.get("CRUNCHY-ARMCHAIR") is not None
+    assert uow.committed
+
+
+def test_add_batch_for_existing_product():
+    uow = FakeUnitOfWork()
+    add_batch("b1", "GARISH-RUG", 100, None, uow)
+    add_batch("b2", "GARISH-RUG", 99, None, uow)
+    assert "b2" in [b.reference for b in uow.products.get("GARISH-RUG").batches]
+
+
 def test_allocate_returns_allocation():
     uow = FakeUnitOfWork()
     add_batch("batch1", "COMPLICATED-LAMP", 100, None, uow)
@@ -84,7 +98,7 @@ def test_allocate_returns_allocation():
     assert result == "batch1"
 
 
-def test_allocate_errors_for_invalid_sku(session_factory):
+def test_allocate_errors_for_invalid_sku():
     uow = FakeUnitOfWork()
     add_batch("b1", "AREALSKU", 100, None, uow)
 
@@ -92,15 +106,8 @@ def test_allocate_errors_for_invalid_sku(session_factory):
         allocate("o1", "NONEXISTENTSKU", 10, uow)
 
 
-def test_commits(session_factory):
+def test_allocate_commits():
     uow = FakeUnitOfWork()
     add_batch("b1", "OMINOUS-MIRROR", 100, None, uow)
     allocate("o1", "OMINOUS-MIRROR", 10, uow)
-    assert uow.committed is True
-
-
-def test_add_batch():
-    uow = FakeUnitOfWork()
-    add_batch("b1", "CRUNCHY-ARMCHAIR", 100, None, uow)
-    assert uow.batches.get("b1") is not None
     assert uow.committed
